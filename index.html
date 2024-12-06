@@ -3,137 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Sketch</title>
+  <title>Interactive Sketch with Sidebar</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
-  
-  <!-- 引用您自己的 sketch.js -->
   <script src="sketch.js"></script>
   <style>
-    body { 
-      margin: 0; 
+    body {
+      margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f0f0;
+      overflow: hidden;
     }
-    #menu {
+    /* 主畫面 */
+    #menuToggle {
       position: fixed;
       top: 20px;
-      left: 20px;
-      background: linear-gradient(135deg, #ffffff, #e6e6e6);
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      padding: 20px;
-      width: 250px;
+      right: 20px;
       z-index: 100;
     }
-    .menu-btn {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
+    #menuToggle button {
       background-color: #4a90e2;
       color: white;
-      font-weight: 600;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    #menuToggle button:hover {
+      background-color: #3a7bd5;
+    }
+    /* 側拉選單 */
+    #sideMenu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100%;
+      background: linear-gradient(135deg, #ffffff, #e6e6e6);
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      transition: all 0.3s ease-in-out;
+      z-index: 99;
+    }
+    #sideMenu.active {
+      right: 0;
+    }
+    #sideMenu h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .menu-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
     }
     .menu-btn:hover {
       background-color: #3a7bd5;
-      transform: translateY(-2px);
     }
-    #music-btn {
-      background-color: #2ecc71;
-    }
-    #music-btn:hover {
-      background-color: #27ae60;
-    }
-    #reset-btn {
+    .close-btn {
       background-color: #e74c3c;
     }
-    #reset-btn:hover {
+    .close-btn:hover {
       background-color: #c0392b;
     }
   </style>
 </head>
 <body>
-  <div id="menu">
+  <!-- 選單按鈕 -->
+  <div id="menuToggle">
+    <button onclick="toggleMenu()">☰ Menu</button>
+  </div>
+
+  <!-- 側拉選單 -->
+  <div id="sideMenu">
+    <button class="menu-btn close-btn" onclick="toggleMenu()">Close</button>
+    <h2>Options</h2>
     <button class="menu-btn" onclick="changeSketchMode(1)">Mode 1</button>
     <button class="menu-btn" onclick="changeSketchMode(2)">Mode 2</button>
     <button class="menu-btn" onclick="changeSketchMode(3)">Mode 3</button>
-    <button id="music-btn" class="menu-btn" onclick="toggleMusic()">Play Music</button>
-    <button id="reset-btn" class="menu-btn" onclick="resetSketch()">Reset View</button>
+    <button class="menu-btn" onclick="toggleMusic()">Play Music</button>
+    <button class="menu-btn" onclick="resetSketch()">Reset View</button>
   </div>
+
   <script>
-    let music;
-    let isPlaying = false;
-    let sketchMode = 1;
-    let currentScale = 1;
-
-    function preload() {
-      music = loadSound('music.mp3');
-    }
-
-    function setup() {
-      let canvas = createCanvas(windowWidth, windowHeight);
-      canvas.style('position', 'fixed');
-      canvas.style('top', '0');
-      canvas.style('left', '0');
-      noStroke();
-      textAlign(CENTER, CENTER);
-    }
-
-    function draw() {
-      background(30, 144, 255);
-      
-      // 縮放效果
-      scale(currentScale);
-      
-      // 根據不同模式繪製不同效果
-      switch(sketchMode) {
-        case 1:
-          fill(255, 140, 0, 150);
-          ellipse(mouseX/currentScale, mouseY/currentScale, 80, 80);
-          break;
-        case 2:
-          fill(0, 255, 0, 150);
-          rectMode(CENTER);
-          rect(mouseX/currentScale, mouseY/currentScale, 100, 100);
-          break;
-        case 3:
-          fill(255, 0, 0, 150);
-          triangle(
-            mouseX/currentScale, mouseY/currentScale - 50,
-            mouseX/currentScale - 50, mouseY/currentScale + 50,
-            mouseX/currentScale + 50, mouseY/currentScale + 50
-          );
-          break;
-      }
-    }
-
-    function toggleMusic() {
-      let musicBtn = select('#music-btn');
-      if (isPlaying) {
-        music.pause();
-        musicBtn.html('Play Music');
-      } else {
-        music.loop();
-        musicBtn.html('Pause Music');
-      }
-      isPlaying = !isPlaying;
-    }
-
-    function changeSketchMode(mode) {
-      sketchMode = mode;
-    }
-
-    function resetSketch() {
-      // 重置視圖縮放
-      currentScale = currentScale === 1 ? 1.5 : 1;
-    }
-
-    function windowResized() {
-      resizeCanvas(windowWidth, windowHeight);
+    // 側拉選單切換功能
+    function toggleMenu() {
+      const sideMenu = document.getElementById('sideMenu');
+      sideMenu.classList.toggle('active');
     }
   </script>
 </body>
