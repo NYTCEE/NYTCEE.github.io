@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Sketch with Sidebar</title>
+  <title>Interactive Sketch with Music and Resizable Canvas</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
   <script src="sketch.js"></script>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Times New Roman', serif;
       overflow: hidden;
     }
-    /* 主畫面 */
+    /* 漢堡按鈕 */
     #menuToggle {
       position: fixed;
       top: 20px;
@@ -20,74 +20,68 @@
       z-index: 100;
     }
     #menuToggle button {
-      background-color: #4a90e2;
+      background-color: black;
       color: white;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      padding: 15px;
+      border-radius: 50%;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.5rem;
       font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease-in-out;
     }
     #menuToggle button:hover {
-      background-color: #3a7bd5;
+      transform: scale(1.1);
     }
-    /* 側拉選單 */
+    /* 圓形側拉選單 */
     #sideMenu {
       position: fixed;
-      top: 0;
+      top: 50%;
       right: -300px;
+      transform: translateY(-50%);
       width: 300px;
-      height: 100%;
-      background: linear-gradient(135deg, #ffffff, #e6e6e6);
-      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-      padding: 20px;
+      height: 300px;
+      background: black;
+      border-radius: 50%;
+      box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       transition: all 0.3s ease-in-out;
       z-index: 99;
     }
     #sideMenu.active {
-      right: 0;
-    }
-    #sideMenu h2 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-      text-align: center;
+      right: 20px;
     }
     .menu-btn {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 5px;
-      background-color: #4a90e2;
+      background-color: black;
       color: white;
+      border: 2px solid white;
+      padding: 10px 20px;
+      margin: 10px 0;
+      border-radius: 20px;
+      cursor: pointer;
       font-size: 1rem;
       font-weight: bold;
-      cursor: pointer;
+      font-family: 'Times New Roman', serif;
       transition: all 0.3s ease-in-out;
     }
     .menu-btn:hover {
-      background-color: #3a7bd5;
-    }
-    .close-btn {
-      background-color: #e74c3c;
-    }
-    .close-btn:hover {
-      background-color: #c0392b;
+      background-color: white;
+      color: black;
     }
   </style>
 </head>
 <body>
-  <!-- 選單按鈕 -->
+  <!-- 漢堡按鈕 -->
   <div id="menuToggle">
-    <button onclick="toggleMenu()">☰ Menu</button>
+    <button onclick="toggleMenu()">☰</button>
   </div>
 
-  <!-- 側拉選單 -->
+  <!-- 圓形側拉選單 -->
   <div id="sideMenu">
-    <button class="menu-btn close-btn" onclick="toggleMenu()">Close</button>
-    <h2>Options</h2>
     <button class="menu-btn" onclick="changeSketchMode(1)">Mode 1</button>
     <button class="menu-btn" onclick="changeSketchMode(2)">Mode 2</button>
     <button class="menu-btn" onclick="changeSketchMode(3)">Mode 3</button>
@@ -96,10 +90,46 @@
   </div>
 
   <script>
+    // 音樂控制變數
+    let music;
+    let isPlaying = false;
+
     // 側拉選單切換功能
     function toggleMenu() {
       const sideMenu = document.getElementById('sideMenu');
       sideMenu.classList.toggle('active');
+    }
+
+    // 音樂播放與暫停功能
+    function preload() {
+      music = loadSound('music.mp3'); // 確保音樂文件存在
+    }
+
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+      } else {
+        music.loop();
+      }
+      isPlaying = !isPlaying;
+    }
+
+    // 改變模式的功能（占位函數，需在 sketch.js 中定義）
+    function changeSketchMode(mode) {
+      if (typeof window.changeSketchModeInP5 === "function") {
+        window.changeSketchModeInP5(mode);
+      } else {
+        console.log("changeSketchModeInP5 function is not defined in sketch.js");
+      }
+    }
+
+    // 重置畫布（占位函數，需在 sketch.js 中定義）
+    function resetSketch() {
+      if (typeof window.resetSketchInP5 === "function") {
+        window.resetSketchInP5();
+      } else {
+        console.log("resetSketchInP5 function is not defined in sketch.js");
+      }
     }
   </script>
 </body>
