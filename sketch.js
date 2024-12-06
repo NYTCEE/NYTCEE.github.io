@@ -2,6 +2,15 @@ let constellation = [];
 let n;
 let d;
 let currentScale = 1;
+let music;
+let isPlaying = false;
+
+function preload() {
+  music = loadSound('music.mp3', 
+    () => console.log('Music loaded successfully'), // 加載成功
+    (err) => console.log('Error loading music: ', err) // 加載錯誤
+  );
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight); // 畫布填滿螢幕
@@ -32,13 +41,13 @@ function draw() {
   }
 }
 
+// 當窗口大小改變時，調整畫布大小
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight); // 動態調整畫布大小
 }
 
 // 改變模式的函數
 function changeSketchModeInP5(mode) {
-  // 可自定義模式變換邏輯
   console.log("Switch to mode: " + mode);
 }
 
@@ -51,6 +60,19 @@ function resetSketchInP5() {
 // 設置畫布縮放
 function scaleCanvas() {
   scale(currentScale);
+}
+
+// 播放或暫停音樂
+function toggleMusic() {
+  const musicBtn = document.getElementById('music-btn');
+  if (isPlaying) {
+    music.pause();
+    musicBtn.innerHTML = 'Play Music'; // 播放時顯示 "Play Music"
+  } else {
+    music.loop();
+    musicBtn.innerHTML = 'Pause Music'; // 暫停時顯示 "Pause Music"
+  }
+  isPlaying = !isPlaying;
 }
 
 function star() {
