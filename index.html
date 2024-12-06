@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p5.js Interactive Menu</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    .menu {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      z-index: 10;
+    }
+    .menu h1 {
+      font-size: 1.2em;
+      margin: 0 0 10px;
+    }
+    .menu button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 5px;
+      background: #4CAF50;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .menu button:hover {
+      background: #45a049;
+    }
+    .menu .play-music {
+      background: #008CBA;
+    }
+    .menu .play-music:hover {
+      background: #007BB5;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <h1>Select an Option</h1>
+    <button onclick="alert('Option 1 Selected!')">Option 1</button>
+    <button onclick="alert('Option 2 Selected!')">Option 2</button>
+    <button onclick="alert('Option 3 Selected!')">Option 3</button>
+    <button class="play-music" onclick="toggleMusic()">Play Music</button>
+  </div>
+
+  <script>
+    let music;
+    let isPlaying = false;
+
+    function preload() {
+      // Replace 'music.mp3' with the path to your audio file
+      music = loadSound('music.mp3');
+    }
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      noStroke();
+    }
+
+    function draw() {
+      background(30, 144, 255);
+      fill(255, 140, 0, 150);
+      ellipse(mouseX, mouseY, 80, 80); // Draw interactive shapes following the mouse
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight); // Adjust canvas size when the window is resized
+    }
+
+    function toggleMusic() {
+      if (isPlaying) {
+        music.pause();
+      } else {
+        music.loop();
+      }
+      isPlaying = !isPlaying;
+    }
+  </script>
+</body>
+</html>
