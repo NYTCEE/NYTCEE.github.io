@@ -20,40 +20,36 @@
       z-index: 100;
     }
     #menuToggle button {
-      background-color: black;
-      color: white;
+      background-color: transparent;
       border: none;
-      padding: 15px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1.5rem;
+      color: gray;
+      font-size: 2rem;
       font-weight: bold;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+      padding: 5px;
     }
     #menuToggle button:hover {
-      transform: scale(1.1);
+      color: black;
     }
-    /* 圓形側拉選單 */
+    /* 長條形側拉選單 */
     #sideMenu {
       position: fixed;
-      top: 50%;
+      top: 0;
       right: -300px;
-      transform: translateY(-50%);
-      width: 300px;
-      height: 300px;
+      width: 250px;
+      height: 100%;
       background: black;
-      border-radius: 50%;
-      box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.3);
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease-in-out;
       z-index: 99;
+      padding: 20px;
     }
     #sideMenu.active {
-      right: 20px;
+      right: 0;
     }
     .menu-btn {
       background-color: black;
@@ -80,7 +76,7 @@
     <button onclick="toggleMenu()">☰</button>
   </div>
 
-  <!-- 圓形側拉選單 -->
+  <!-- 長條形側拉選單 -->
   <div id="sideMenu">
     <button class="menu-btn" onclick="changeSketchMode(1)">Mode 1</button>
     <button class="menu-btn" onclick="changeSketchMode(2)">Mode 2</button>

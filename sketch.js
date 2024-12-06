@@ -1,6 +1,7 @@
 let constellation = [];
 let n;
 let d;
+let currentScale = 1;
 
 function setup() {
   createCanvas(windowWidth, windowHeight); // 畫布填滿螢幕
@@ -33,6 +34,23 @@ function draw() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight); // 動態調整畫布大小
+}
+
+// 改變模式的函數
+function changeSketchModeInP5(mode) {
+  // 可自定義模式變換邏輯
+  console.log("Switch to mode: " + mode);
+}
+
+// 重置畫布的函數
+function resetSketchInP5() {
+  currentScale = currentScale === 1 ? 1.5 : 1; // 重置或調整畫布的縮放比例
+  scaleCanvas();
+}
+
+// 設置畫布縮放
+function scaleCanvas() {
+  scale(currentScale);
 }
 
 function star() {
