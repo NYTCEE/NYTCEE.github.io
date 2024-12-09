@@ -17,7 +17,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     pixelDensity(displayDensity());
     smooth();
-    n = 200;
+    n = 150;
 
     constellation = []; // Reset constellation each setup
     for (let i = 0; i <= n; i++) {
@@ -95,7 +95,7 @@ class Star {
 
     update() {
         this.bam = p5.Vector.random2D();
-        this.bam.mult(0.45);
+        this.bam.mult(0.25);
         this.speed.add(this.bam);
 
         const distance = dist(this.loc.x, this.loc.y, mouseX, mouseY);
@@ -107,7 +107,7 @@ class Star {
         this.speed.normalize().mult(this.m);
 
         // Boundary handling
-        if (dist(this.loc.x, this.loc.y, width / 2, height / 2) > (width / 2) * 0.98) {
+        if (dist(this.loc.x, this.loc.y, width / 2, height / 2) > (width / 2) * 0.58) {
             if (this.loc.x < width / 2) {
                 this.loc.x = width - this.loc.x - 4;
             } else if (this.loc.x > width / 2) {
