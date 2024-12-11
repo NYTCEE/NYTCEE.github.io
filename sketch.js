@@ -108,6 +108,7 @@ function toggleMusicInP5() {
         musicBtn.innerHTML = 'Pause Music';
     }
     isPlaying = !isPlaying;
+    console.log("Music is now: " + (isPlaying ? 'playing' : 'paused'));
 }
 
 function resetSketchInP5() {
