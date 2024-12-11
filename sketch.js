@@ -85,7 +85,7 @@ function windowResized() {
 
 // In sketch.js
 function changeSketchModeInP5(mode) {
-    currentMode = mode;
+
     if (mode === 3) {
         showText = !showText; // Toggle text visibility
         // Update button text based on state
