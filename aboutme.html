@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me Visualization</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            color: white;
+        }
+
+        #p5-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(0, 0, 0, 0);
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transform-origin: center center;
+            z-index: 2;
+            will-change: opacity, transform;
+            -webkit-font-smoothing: antialiased;
+            backface-visibility: hidden;
+        }
+        .about-me-image {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            transform: translateY(-50%);
+            width: 15vw;
+            height: auto;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out forwards;
+            animation-delay: 3s;
+            object-fit: contain;
+            max-height: 40vh;
+            max-width: 200px;
+            margin-right: 20px;
+            z-index: -2; /* Place behind p5.js canvas */
+            visibility: visible; /* Hide initially */
+            animation: none; /* Remove initial animation */
+        }
+
+        .about-me-image.visible {
+            visibility: visible;
+            z-index: 1; /* Increased z-index to ensure visibility */
+            opacity: 1; /* Set opacity to 1 when visible */
+            transition: opacity 2s ease-in-out, z-index 0s; /* Added transition */
+        }
+
+        @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        }
+
+        .content.visible {
+            opacity: 1;
+            transform: translate(-50%, -50%) translateY(0);
+            transition-delay: 0.3s;
+        }
+
+        .content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 15px;
+        }
+
+        .content-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .content-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="p5-canvas"></div>
+
+    <div class="content-container">
+        <div class="content">
+          <h1>About Me...</h1>
+          <p>20 y/o and loves reading, fav author is Mishima Yukio.</p>
+          <p>Major in Electronic Engineering at National Taipei University of Technology.</p>
+        </div>
+    </div>
+
+    <div class="about-me-image fade-in">
+        <img src="image.jpg" alt="About Me Image" style="max-width: 50vw; max-height: 50vh; object-fit: contain;">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="opensimplex.js"></script>
+    <script>
+        class Decomposer {
+            constructor(x, y, size, delay) {
+                let centerX = windowWidth / 2;
+                let centerY = windowHeight / 2;
+                this.pos = createVector(x + centerX, y + centerY);
+                this.fsize = size;
+                this.size = 1;
+                this.delay = delay;
+                this.rotation = random(-0.2, 0.2);
+            }
+
+            grow() {
+                if (this.delay > 0) {
+                    this.delay--;
+                } else if (this.size < this.fsize) {
+                    this.size += 0.2;
+                }
+            }
+
+            show(opacity) {
+                if (this.delay <= 0) {
+                    push();
+                    translate(this.pos.x, this.pos.y);
+                    rotate(this.rotation);
+                    scale(this.size / this.fsize);
+
+                    fill(255, 230, 240, 255 * opacity);
+                    noStroke();
+                
+                    for (let i = 0; i < 5; i++) {
+                        push();
+                        rotate(TWO_PI / 5 * i);
+                        beginShape();
+                        vertex(0, 0);
+                        bezierVertex(
+                            this.size / 3, -this.size / 4,
+                            this.size / 2, -this.size / 3,
+                            this.size / 1.2, 0
+                        );
+                        bezierVertex(
+                            this.size / 2, this.size / 3,
+                            this.size / 3, this.size / 4,
+                            0, 0
+                        );
+                        endShape(CLOSE);
+                        pop();
+                    }
+
+                    fill(255, 220, 200, 255 * opacity);
+                    ellipse(0, 0, this.size / 4, this.size / 4);
+
+                    pop();
+                }
+            }
+        }
+
+        let theFont, simplex;
+        let decomposers = [];
+        let canvasOpacity = 1;
+        let allFlowersGrown = false;
+        let fadeStarted = false;
+
+        function preload() {
+            theFont = loadFont('TimesNewRomanBold.ttf', () => {
+                console.log("Font loaded successfully.");
+            }, () => {
+                console.error("Failed to load font! Please ensure 'TimesNewRomanBold.ttf' is in the same directory.");
+            });
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight).parent('p5-canvas');
+            initializeDecomposers();
+        }
+
+        function initializeDecomposers() {
+            background(0);
+            decomposers = [];
+    
+            simplex = new OpenSimplexNoise(Date.now());
+            textFont(theFont);
+            textSize(height * 0.2);
+            textAlign(LEFT, CENTER);
+
+            let centerY = height / 2 + height * 0.1;
+            let textYSpacing = height * 0.15;
+    
+            let decompWidth = textWidth('ABOUT');
+            let billWidth = textWidth('NYTCEE');
+            let decompX = width / 2 - decompWidth / 2;
+            let billX = width / 2 - billWidth / 2;
+
+            let sampleFactor = 0.005;
+    
+            let decompPoints = theFont.textToPoints('ABOUT', 
+                decompX,
+                centerY - textYSpacing,
+                height * 0.2, 
+                { sampleFactor: sampleFactor }
+            );
+
+            let billionPoints = theFont.textToPoints('NYTCEE', 
+                billX,
+                centerY + textYSpacing,
+                height * 0.2, 
+                { sampleFactor: sampleFactor }
+            );
+
+            decompPoints = decompPoints.filter((_, index) => index % 2 === 0);
+            billionPoints = billionPoints.filter((_, index) => index % 2 === 0);
+
+            for (let point of decompPoints) {
+                decomposers.push(new Decomposer(point.x - width / 2, point.y - height / 2, random(height / 40, height / 30), random(20, 100)));
+            }
+
+            for (let point of billionPoints) {
+                decomposers.push(new Decomposer(point.x - width / 2, point.y - height / 2, random(height / 40, height / 30), random(20, 100)));
+            }
+        }
+
+        function draw() {
+            // Debug log
+            console.log('Drawing:', {canvasOpacity, allFlowersGrown, fadeStarted});
+            
+            // Clear with semi-transparent background
+            background(0, 10);
+            
+            // Check if all flowers have grown
+            if (!allFlowersGrown) {
+                allFlowersGrown = decomposers.every(d => d.size >= d.fsize);
+                if (allFlowersGrown) {
+                    console.log('All flowers grown!');
+                    setTimeout(() => {
+                        fadeStarted = true;
+                        console.log('Fade started!');
+                    }, 500);
+                }
+            }
+            
+            // Draw text with full opacity until fade starts
+            fill(255, fadeStarted ? (255 * canvasOpacity) : 255);
+            let decompWidth = textWidth('ABOUT');
+            let billWidth = textWidth('NYTCEE');
+
+            text('ABOUT', width / 2 - decompWidth / 2, height / 2 - height * 0.15);
+            text('NYTCEE', width / 2 - billWidth / 2, height / 2 + height * 0.15);
+
+            // Draw flowers
+            for (let d of decomposers) {
+                d.grow();
+                d.show(fadeStarted ? canvasOpacity : 1);
+            }
+
+            // Handle fading
+            if (fadeStarted) {
+                canvasOpacity = Math.max(0, canvasOpacity - 0.005);
+                const content = document.querySelector('.content');
+                const image = document.querySelector('.about-me-image');
+                
+                content.style.opacity = 1 - canvasOpacity;
+                content.style.transform = `translateY(${50 * canvasOpacity}px)`;
+                
+                // Show image when canvas is fully faded
+                if (canvasOpacity <= 0) {
+                    console.log('Showing image'); // Debug log
+                    image.classList.add('visible');
+                    image.style.opacity = '1';
+                    image.style.zIndex = '2';
+                }
+            }
+        }
+
+        // [Decomposer class remains the same as in original code]
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            initializeDecomposers();
+        }
+
+        // Update visibility toggle in your fade animation
+        if (fadeStarted && canvasOpacity <= 0) {
+            const image = document.querySelector('.about-me-image');
+            image.classList.add('visible');
+        }
+    </script>
+
+</body>
+</html>
